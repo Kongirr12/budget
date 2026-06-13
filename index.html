@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8">
+  <title>ระบบบริหารงบประมาณ</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- รวม CSS จาก CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/2.0.8/css/dataTables.bootstrap5.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.css">
+
+  <!-- [EDITED] เพิ่ม CSS สำหรับ Tom-Select -->
+  <link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.bootstrap5.min.css" rel="stylesheet">
+
+  <!-- Google Font 'Kanit' -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+  <!-- CSS ภายใน (Modern Pastel Theme) -->
+  <style>
+    :root {
+      --primary-color: #76A9EA;
+      --primary-hover: #5F97D9;
+      --secondary-color: #A7C7E7;
+      --accent-color: #FFB7C5;
+      --success-color: #A7E9AF;
+      --success-hover: #8FDB95;
+      --warning-color: #FFEE93;
+      --danger-color: #FFB6B6;
+      --danger-hover: #FF9E9E;
+      --bg-color: #F8F9FA;
+      --text-color: #333;
+      --text-muted-color: #6c757d;
+      --card-bg: #FFFFFF;
+      --border-color: #E0E0E0;
+      --border-radius-lg: 12px;
+      --border-radius-md: 8px;
+    }
+
+    /* 1. Base Setup */
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      font-family: 'Kanit', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      font-weight: 300;
+    }
+
+    main {
+      flex: 1;
+      padding-top: 1.5rem;
+    }
+
+    h2, h5, .h5, strong {
+      font-weight: 500;
+    }
+
+    /* 2. Navbar */
+    .navbar {
+      background-color: var(--card-bg) !important;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      font-weight: 400;
+    }
+
+    .navbar-brand {
+      font-weight: 500;
+      color: var(--primary-color) !important;
+    }
+
+    /* 3. Cards */
+    .card {
+      border: none;
+      border-radius: var(--border-radius-lg);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      overflow: hidden; /* สำหรับ card-header */
+    }
+
+    .card-header {
+      font-weight: 500;
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    /* Pastel Card Headers (from admin.html) */
+    .bg-light-pastel-primary { 
+      background-color: #EAF2F8; 
+      color: #3A70A1; 
+      border-bottom: 1px solid #DDE; 
+    }
+    .bg-light-pastel-info { 
+      background-color: #E8F6F3; 
+      color: #1D695B; 
+      border-bottom: 1px solid #DDE; 
+    }
+    .bg-light-pastel-secondary { 
+      background-color: #F4F6F7; 
+      color: #515A5A; 
+      border-bottom: 1px solid #DDE; 
+    }
+
+    /* 4. Buttons */
+    .btn {
+      border: none;
+      border-radius: var(--border-radius-md);
+      font-weight: 400;
+      transition: all 0.3s ease;
+      padding: 0.5rem 1rem;
+    }
+
+    .btn-primary {
+      background-color: var(--primary-color);
+      color: white;
+    }
+    .btn-primary:hover {
+      background-color: var(--primary-hover);
+      color: white;
+    }
+
+    .btn-success {
+      background-color: var(--success-color);
+      color: #2E7D32;
+    }
+    .btn-success:hover {
+      background-color: var(--success-hover);
+      color: #2E7D32;
+    }
+
+    .btn-danger {
+      background-color: var(--danger-color);
+      color: #B71C1C;
+    }
+    .btn-danger:hover {
+      background-color: var(--danger-hover);
+      color: #B71C1C;
+    }
+    
+    .btn-warning {
+      background-color: var(--warning-color);
+      color: #8D6E00;
+    }
+
+    /* 5. Alerts (Dashboard & Admin Form) */
+    .alert {
+      border-radius: var(--border-radius-md);
+      border: 1px solid transparent;
+    }
+    .alert-primary {
+      background-color: #EBF5FF;
+      color: #1A5276;
+      border-color: #B4D6F8;
+    }
+    .alert-info {
+      background-color: #E8F8F5;
+      color: #117864;
+      border-color: #A9DFBF;
+    }
+    .alert-warning {
+      background-color: #FFF9E5;
+      color: #7D6608;
+      border-color: #F7DC6F;
+    }
+    .alert-success {
+      background-color: #EAF7E9;
+      color: #1E8449;
+      border-color: #A9D9A7;
+    }
+    .alert-secondary {
+      background-color: #F4F6F7;
+      color: #515A5A;
+      border-color: #D6DBDF;
+    }
+
+    /* 6. Tabs (Admin) */
+    .nav-tabs {
+      border-bottom: 1px solid var(--border-color);
+    }
+    .nav-tabs .nav-link {
+      border: none;
+      color: var(--text-muted-color);
+      font-weight: 400;
+    }
+    .nav-tabs .nav-link.active,
+    .nav-tabs .nav-item.show .nav-link {
+      border-bottom: 3px solid var(--primary-color);
+      color: var(--primary-color);
+      font-weight: 500;
+      background: none;
+    }
+
+    /* 7. Modals */
+    .modal-content {
+      border: none;
+      border-radius: var(--border-radius-lg);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    }
+    .modal-header {
+      border-bottom: 1px solid var(--border-color);
+    }
+    .modal-header .btn-close {
+      transition: all 0.2s ease;
+    }
+    .modal-header .btn-close:hover {
+      transform: scale(1.1);
+    }
+    .modal-header.bg-primary {
+      background-color: var(--primary-color) !important;
+    }
+
+    .modal-footer {
+      background-color: #F8F9FA;
+      border-top: 1px solid var(--border-color);
+    }
+
+    /* 8. DataTables */
+    table.dataTable thead {
+      background-color: #F4F6F7;
+      color: #515A5A;
+      font-weight: 500;
+    }
+    .dataTables_wrapper .dataTables_paginate .paginate_button {
+      border-radius: 50% !important; /* Make pagination rounded */
+    }
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+      background: var(--primary-color) !important;
+      color: white !important;
+      border: none;
+    }
+
+    /* 9. Footer */
+    .main-footer {
+      background-color: var(--card-bg);
+      color: var(--text-muted-color);
+      padding: 20px 0;
+      font-size: 0.9rem;
+    }
+    .main-footer a.footer-link {
+      color: var(--primary-color);
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .main-footer a.footer-link:hover {
+      text-decoration: underline;
+    }
+    .footer-logo {
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    /* 10. Utility */
+    .section {
+      display: none;
+    }
+    .section.active {
+      display: block;
+    }
+
+    /* 11. [EDITED] Tom-Select Custom */
+    .ts-control {
+      border-radius: var(--border-radius-md) !important;
+      border-color: #ced4da !important;
+    }
+    .ts-control.focus {
+      box-shadow: 0 0 0 0.25rem rgba(118, 169, 234, 0.25) !important;
+      border-color: var(--primary-color) !important;
+    }
+    .ts-dropdown {
+      border-radius: var(--border-radius-md) !important;
+    }
+
+    /* [ATTACHMENT EDIT] 12. Dropzone & Preview CSS */
+    .dropzone {
+      border: 2px dashed #ccc;
+      border-radius: var(--border-radius-md);
+      padding: 25px;
+      text-align: center;
+      color: #888;
+      background-color: #fafafa;
+      transition: all 0.3s ease;
+      font-weight: 400;
+      cursor: pointer;
+    }
+
+    .dropzone i {
+      font-size: 2rem;
+      display: block;
+      margin-bottom: 0.5rem;
+      color: #aaa;
+    }
+    
+    .dropzone.dragover {
+      border-color: var(--primary-color);
+      background-color: #f0f5fa;
+      color: var(--primary-color);
+    }
+
+    .preview-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 15px;
+      min-height: 50px; /* [BATCH] เพิ่มความสูงขั้นต่ำ */
+    }
+
+    .thumbnail {
+      width: 120px;
+      height: 120px;
+      border-radius: var(--border-radius-md);
+      border: 1px solid #ddd;
+      overflow: hidden;
+      position: relative;
+      background-color: #f9f9f9;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 5px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    
+    .thumbnail img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+    
+    .thumbnail .file-icon {
+      font-size: 3rem;
+      line-height: 1;
+    }
+
+    .thumbnail .file-info {
+      font-size: 0.75rem;
+      text-align: center;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      width: 100%;
+      padding: 2px 5px;
+      background: rgba(255,255,255,0.8);
+      backdrop-filter: blur(2px);
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      cursor: pointer;
+    }
+    .thumbnail .file-info:hover {
+      text-decoration: underline;
+    }
+
+    .thumbnail .delete-file {
+      position: absolute;
+      top: 2px;
+      right: 2px;
+      width: 20px;
+      height: 20px;
+      background-color: rgba(217, 83, 79, 0.8); /* danger */
+      color: white;
+      border: none;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+      padding: 0;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      z-index: 10;
+      transition: all 0.2s ease;
+    }
+    .thumbnail .delete-file:hover {
+      background-color: rgba(217, 83, 79, 1);
+    }
+    
+    .thumbnail .thumbnail-loading {
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: rgba(255,255,255,0.7);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9;
+    }
+    
+    /* [BATCH EDIT] CSS สำหรับ Read/Edit Mode */
+    .upload-modal-body[data-mode="read"] .dropzone {
+      display: none; /* ซ่อน dropzone ในโหมดอ่าน */
+    }
+    .upload-modal-body[data-mode="edit"] .dropzone {
+      display: block; /* แสดง dropzone ในโหมดแก้ไข */
+    }
+    
+    .upload-modal-body[data-mode="read"] .thumbnail .delete-file {
+      display: none; /* ซ่อนปุ่มลบในโหมดอ่าน */
+    }
+    .upload-modal-body[data-mode="edit"] .thumbnail .delete-file {
+      display: flex; /* แสดงปุ่มลบในโหมดแก้ไข */
+    }
+    
+    .upload-modal-body[data-mode="edit"] .thumbnail[data-is-staged="false"] {
+       /* [BATCH] ทำให้ไฟล์เก่าที่ถูกลบ (ซ่อน) จางลง */
+       transition: opacity 0.3s ease;
+    }
+
+  </style>
+
+</head>
+
+<body>
+  <?!= include('modal') ?>
+  <!-- Navbar (sticky-top) -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
+    <div class="container">
+      <a class="navbar-brand" href="#">
+        <i class="fa-solid fa-sack-dollar me-1"></i>
+        ระบบบริหารงบประมาณ
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <!-- ลิงก์เมนูจะเติมด้วย JS -->
+        <ul class="navbar-nav me-auto" id="navLinks"></ul>
+
+        <!-- ข้อมูลผู้ใช้และปุ่ม Logout -->
+        <div class="d-flex align-items-center">
+          <span id="userInfo" class="navbar-text me-2"></span>
+          <button id="logoutBtn" class="btn btn-danger btn-sm" style="display: none;">
+            <i class="fa-solid fa-right-from-bracket me-1"></i> ล็อกเอาท์
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+
+  <main>
+    <!-- Section สำหรับ Admin -->
+    <section id="admin" class="section mb-3">
+      <?!= include('admin') ?>
+      <!-- ดึงเนื้อหา admin จากไฟล์อื่น -->
+    </section>
+
+    <!-- Section สำหรับ Public (Dashboard & Graph) -->
+    <section id="public" class="section mb-3">
+      <div class="container">
+        <!-- [DASHBOARD EDIT] เปลี่ยนหัวข้อ -->
+        <h2><i class="fa-solid fa-chart-pie text-primary"></i> ภาพรวมสถานะโครงการ</h2>
+
+        <div class="card mt-4">
+          <div class="card-body">
+
+            <!-- [DASHBOARD EDIT] เปลี่ยน Card ทั้งหมด -->
+            <div class="row mb-3 g-3">
+              <div class="col-md-3 col-6">
+                <div class="alert alert-primary text-center h-100 mb-0">
+                  <h6 class="mb-1">โครงการทั้งหมด</h6>
+                  <strong id="totalProjects" class="fs-5">-</strong>
+                </div>
+              </div>
+              <div class="col-md-3 col-6">
+                <div class="alert alert-success text-center h-100 mb-0">
+                  <h6 class="mb-1">ดำเนินการเสร็จสิ้น</h6>
+                  <strong id="totalCompleted" class="fs-5">-</strong>
+                </div>
+              </div>
+              <div class="col-md-3 col-6">
+                <div class="alert alert-warning text-center h-100 mb-0">
+                  <h6 class="mb-1">กำลังดำเนินการ</h6>
+                  <strong id="totalInProgress" class="fs-5">-</strong>
+                </div>
+              </div>
+              <div class="col-md-3 col-6">
+                <div class="alert alert-secondary text-center h-100 mb-0">
+                  <h6 class="mb-1">ยังไม่ดำเนินการ</h6>
+                  <strong id="totalNotStarted" class="fs-5">-</strong>
+                </div>
+              </div>
+            </div>
+
+            <!-- [STATUS FILTER EDIT] Wrap filters in a row -->
+            <div class="row g-3 mt-4">
+              <!-- Filter Project -->
+              <div class="col-md-6">
+                <label for="filterProject" class="form-label"><i class="fa-solid fa-filter me-1"></i> กรองตามโครงการ</label>
+                <select id="filterProject" class="form-select" onchange="filterSummaryTable()">
+                  <option value="">-- แสดงทั้งหมด --</option>
+                </select>
+              </div>
+              
+              <!-- [NEW] Filter Status -->
+              <div class="col-md-6">
+                <label for="filterStatus" class="form-label"><i class="fa-solid fa-filter me-1"></i> กรองตามสถานะ</label>
+                <select id="filterStatus" class="form-select" onchange="filterSummaryTable()">
+                  <option value="">-- แสดงทั้งหมด --</option>
+                  <option value="เสร็จสิ้น">ดำเนินการเสร็จสิ้น</option>
+                  <option value="กำลังดำเนินการ">กำลังดำเนินการ</option>
+                  <option value="ยังไม่ดำเนินการ">ยังไม่ดำเนินการ</option>
+                </select>
+              </div>
+            </div>
+
+
+            <!-- ตารางสรุปยอดคงเหลือ -->
+            <div class="card mt-4">
+              <!-- [DASHBOARD EDIT] เปลี่ยนชื่อตาราง -->
+              <div class="card-header bg-light-pastel-secondary d-flex justify-content-between align-items-center">
+                <div><i class="fa-solid fa-table-list me-2"></i> สรุปการดำเนินการ</div>
+                <button class="btn btn-sm btn-outline-primary" style="--bs-btn-padding-y: .2rem; --bs-btn-padding-x: .5rem;" onclick="loadProjectSummary()">
+                  <i class="fa-solid fa-rotate-right me-1"></i> รีเฟรช
+                </button>
+              </div>
+
+              <div class="card-body">
+                <div class="table-responsive">
+                  <table id="summaryTable" class="table table-hover" style="width:100%;">
+                    <!-- [DASHBOARD EDIT] เปลี่ยนหัวตาราง -->
+                    <thead>
+                      <tr>
+                        <th>ที่</th>
+                        <th>รหัส / ชื่อโครงการ</th>
+                        <th>สถานะ</th>
+                        <th>เบิกแล้ว (ครั้ง)</th>
+                        <th>รายงาน (ฉบับ)</th>
+                      </tr>
+                    </thead>
+                    <tbody></tbody> <!-- ข้อมูลจะเติมด้วย JS -->
+                  </table>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <!-- Footer -->
+  <footer class="main-footer py-3 bg-light text-muted border-top">
+    <!-- 
+      [EDIT]
+      - เปลี่ยน justify-content-between เป็น justify-content-center
+      - เปลี่ยน flex-md-row เป็น flex-column (ให้ซ้อนกันเสมอ)
+      - เพิ่ม text-center
+    -->
+    <div class="container d-flex flex-column align-items-center">
+      <!-- ฝั่งซ้าย (Copyright) -->
+      <div class="footer-left mb-1">
+        <strong>Copyright &copy; <?= new Date().getFullYear() ?> ผู้พัฒนาโดย:
+          <a href="#" class="footer-link" target="_blank">...</a>
+        </strong>
+      </div>
+
+      <!-- ฝั่งขวา (Developer) -->
+      <!-- [EDIT] ลบ mt-2 mt-md-0 และเพิ่ม justify-content-center -->
+      <!-- <div class="footer-right d-flex align-items-center justify-content-center gap-2">
+        <img src="https://kboonm.github.io/pic/SX-LOGO4.png" class="footer-logo" width="30" height="30" alt="Developer Logo">
+        <span>ผู้พัฒนาโดย:
+          <a href="#" target="_blank" rel="noopener noreferrer" class="footer-link">...</a>
+        </span>
+      </div> -->
+    </div>
+  </footer>
+
+  <!-- Include Loading Spinner -->
+  <?!= include('loading') ?>
+
+  <!-- [EDITED] เพิ่ม JS สำหรับ Tom-Select (ก่อน script.html) -->
+  <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
+
+  <!-- [NEW] JS Libraries for Excel Import/Export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
+  <!-- Include Client-side Script -->
+  <?!= include('script'); ?>
+  <?!= include('script1'); ?>
+
+</body>
+
+</html>
