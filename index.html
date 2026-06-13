@@ -25,23 +25,38 @@
   <!-- CSS ภายใน (Modern Pastel Theme) -->
   <style>
     :root {
-      --primary-color: #76A9EA;
-      --primary-hover: #5F97D9;
-      --secondary-color: #A7C7E7;
-      --accent-color: #FFB7C5;
-      --success-color: #A7E9AF;
-      --success-hover: #8FDB95;
-      --warning-color: #FFEE93;
-      --danger-color: #FFB6B6;
-      --danger-hover: #FF9E9E;
-      --bg-color: #F8F9FA;
-      --text-color: #333;
-      --text-muted-color: #6c757d;
-      --card-bg: #FFFFFF;
-      --border-color: #E0E0E0;
-      --border-radius-lg: 12px;
-      --border-radius-md: 8px;
-    }
+  --primary-color: #8A1538;      /* สีแดงเลือดหมูหลัก */
+  --primary-hover: #A01B42;      /* สีแดงเลือดหมูที่สว่างขึ้นตอนชี้เมาส์ */
+  --secondary-color: #F8F9FA;    /* สีเทาอ่อนค่อนไปทางขาว */
+  --accent-color: #D4AF37;       /* สีทองอ่อนสำหรับจุดตัดบางส่วน (ถ้ามี) */
+  --success-color: #198754;      
+  --warning-color: #ffc107;
+  --danger-color: #dc3545;
+  --bg-color: #F4F6F7;           /* สีพื้นหลังเว็บไซต์ (ขาวอมเทาหม่น) */
+  --text-color: #333333;
+  --text-muted-color: #6c757d;
+  --card-bg: #FFFFFF;            /* พื้นหลังการ์ดสีขาวล้วน */
+  --border-color: #E0E0E0;
+  --border-radius-lg: 12px;
+  --border-radius-md: 8px;
+}
+
+/* อัปเดตสี Header ของการ์ดให้เข้ากับโทนเลือดหมู-ขาว */
+.bg-light-pastel-primary { 
+  background-color: #FDE8ED; 
+  color: #8A1538; 
+  border-bottom: 1px solid #F8D0D9; 
+}
+.bg-light-pastel-info { 
+  background-color: #E8F8F5; 
+  color: #117864; 
+  border-bottom: 1px solid #DDE; 
+}
+.bg-light-pastel-secondary { 
+  background-color: #F4F6F7; 
+  color: #515A5A; 
+  border-bottom: 1px solid #DDE; 
+}
 
     /* 1. Base Setup */
     html,
